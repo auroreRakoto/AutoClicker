@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "name": "skip",
+    "actions": [
+        {
+            "type": "key_press",
+            "data": "Key.end",
+            "time": 1.045629644393921
+        }
+    ],
+    "screenshots": []
+}

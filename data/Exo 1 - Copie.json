@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "name": "Exo 1",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 897,
+                "y": 398,
+                "button": "Button.left"
+            },
+            "time": 1.266819715499878
+        }
+    ],
+    "screenshots": []
+}

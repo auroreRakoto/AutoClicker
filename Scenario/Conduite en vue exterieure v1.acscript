@@ -1,0 +1,6 @@
+# Une commande par ligne
+JOUER "Exo 1"
+ATTENDRE 10
+JOUER "PgUp"
+ATTENDRE 2
+JOUER "Quitter exo"

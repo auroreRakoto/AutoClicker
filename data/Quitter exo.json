@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "name": "Quitter exo",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 1359,
+                "y": 853,
+                "button": "Button.left"
+            },
+            "time": 0.9275438785552979
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 1398,
+                "y": 871,
+                "button": "Button.left"
+            },
+            "time": 2.313344955444336
+        }
+    ],
+    "screenshots": []
+}

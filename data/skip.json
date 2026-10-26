@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "name": "skip",
+    "actions": [
+        {
+            "type": "key_press",
+            "data": "Key.page_up",
+            "time": 1.383500576019287
+        },
+        {
+            "type": "key_press",
+            "data": "Key.end",
+            "time": 2.645629644393921
+        }
+    ],
+    "screenshots": []
+}

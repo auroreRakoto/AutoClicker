@@ -1,0 +1,21 @@
+{
+    "version": 2,
+    "name": "Exo 2 S 1",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 860,
+                "y": 548,
+                "button": "Button.left"
+            },
+            "time": 0.8282818794250488
+        },
+        {
+            "type": "key_press",
+            "data": "Key.f8",
+            "time": 1.9110336303710938
+        }
+    ],
+    "screenshots": []
+}
