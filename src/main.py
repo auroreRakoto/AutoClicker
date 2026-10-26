@@ -8,8 +8,8 @@ from config import MACROS_DIR
 from macros import MacroManager
 from recorder import Recorder
 from player import MacroPlayer
-from screenshots import ScreenshotManager
 from ui import MacroUI
+from status_overlay import StatusOverlay
 
 
 class MacroRecorderApp:
@@ -26,21 +26,16 @@ class MacroRecorderApp:
             MACROS_DIR
         )
 
+        self.overlay = StatusOverlay(self.root, "AutoClicker — État")
         self.recorder = Recorder(
-            on_status=self.set_status
+            on_status=self.set_status,
+            on_action=self.on_recorded_action
         )
 
         self.player = MacroPlayer(
             root=self.root,
             on_status=self.set_status,
-            on_checkpoint=self.on_playback_checkpoint
-        )
-
-        self.screenshot_manager = ScreenshotManager(
-            root=self.root,
-            recorder=self.recorder,
-            ask_name=self.ask_screenshot_name,
-            on_status=self.set_status
+            on_action=self.on_playback_action
         )
 
         # ====================================================
@@ -100,13 +95,41 @@ class MacroRecorderApp:
         text,
         color="#aaaaaa"
     ):
-        self.root.after(
-            0,
-            lambda: self.ui.set_status(
-                text,
-                color
-            )
-        )
+        def update_ui():
+            self.ui.set_status(text, color)
+            if self.recorder.recording:
+                self.overlay.update(text)
+            elif self.player.playing:
+                self.overlay.update(text)
+            elif any(word in text.lower() for word in ("terminé", "arrêté", "sauvegardée")):
+                self.overlay.stop(text)
+        self.root.after(0, update_ui)
+
+    def on_recorded_action(self, action_type, data):
+        """Show the most recent key/mouse action in the overlay."""
+        if action_type == "key_press":
+            label = f"Appui clavier : {data}"
+        elif action_type == "mouse_click":
+            label = f"Clic : {data.get('button', 'souris')} @ ({data.get('x')}, {data.get('y')})"
+        elif action_type == "mouse_scroll":
+            label = f"Défilement : {data.get('dy', 0)} @ ({data.get('x')}, {data.get('y')})"
+        else:
+            label = f"Action : {action_type}"
+        self.root.after(0, lambda message=label: self.overlay.update(message))
+
+    def on_playback_action(self, action):
+        """Show the action currently being replayed."""
+        action_type = action.get("type", "action")
+        data = action.get("data", {})
+        if action_type == "key_press":
+            label = f"Lecture — touche : {data}"
+        elif action_type == "mouse_click":
+            label = f"Lecture — clic : {data.get('button', 'souris')}"
+        elif action_type == "mouse_scroll":
+            label = "Lecture — défilement souris"
+        else:
+            label = f"Lecture — {action_type}"
+        self.root.after(0, lambda message=label: self.overlay.update(message))
 
     # ========================================================
     # ENREGISTREMENT
@@ -126,9 +149,8 @@ class MacroRecorderApp:
 
             return
 
-        self.screenshot_manager.clear()
-
         self.recorder.start()
+        self.overlay.start("Enregistrement — prêt")
 
         self.ui.record_button.config(
             state="disabled"
@@ -144,6 +166,7 @@ class MacroRecorderApp:
             return
 
         self.recorder.stop()
+        self.overlay.stop("Enregistrement terminé")
 
         self.ui.record_button.config(
             state="normal"
@@ -226,7 +249,7 @@ class MacroRecorderApp:
             self.macro_manager.save_macro(
                 name=name,
                 actions=actions,
-                screenshots=self.screenshot_manager.screenshots
+                screenshots=[]
             )
 
         except Exception as error:
@@ -244,43 +267,8 @@ class MacroRecorderApp:
         self.ui.refresh_macros()
 
         self.set_status(
-            (
-                f"● Macro sauvegardée : {name}"
-                f" — "
-                f"{len(self.screenshot_manager.screenshots)} "
-                f"screenshot"
-            ),
+            f"● Macro sauvegardée : {name}",
             "#4caf50"
-        )
-
-    # ========================================================
-    # SCREENSHOT
-    # ========================================================
-
-    def take_screenshot(self):
-
-        if not self.recorder.recording:
-            return
-
-        try:
-
-            self.screenshot_manager.capture()
-
-        except Exception as error:
-
-            self.ui.error(
-                "Erreur screenshot",
-                str(error)
-            )
-
-    def ask_screenshot_name(self):
-
-        return self.ui.ask_screenshot_name()
-
-    def on_playback_checkpoint(self, screenshot):
-        """Affiche le checkpoint au moment prévu pendant le PLAY."""
-        self.ui.show_playback_checkpoint(
-            screenshot
         )
 
     # ========================================================
@@ -330,17 +318,18 @@ class MacroRecorderApp:
         if repeat_count is None:
             return
 
+        self.overlay.start(f"Lecture : {name}")
         thread = threading.Thread(
             target=self.player.play,
             args=(macro, repeat_count),
             daemon=True
         )
-
         thread.start()
 
     def stop_playback(self):
 
         self.player.stop()
+        self.overlay.stop("Lecture arrêtée")
 
     # ========================================================
     # RENOMMER
@@ -391,8 +380,6 @@ class MacroRecorderApp:
 
         self.ui.refresh_macros()
 
-        self.ui.clear_screenshots()
-
         self.set_status(
             f"● Macro renommée : {new_name}",
             "#4caf50"
@@ -439,8 +426,6 @@ class MacroRecorderApp:
             return
 
         self.ui.refresh_macros()
-
-        self.ui.clear_screenshots()
 
         self.set_status(
             f"● Macro supprimée : {name}",
@@ -492,26 +477,6 @@ class MacroRecorderApp:
 
                 return
 
-            # ------------------------------------------------
-            # + → SCREENSHOT
-            # ------------------------------------------------
-
-            try:
-
-                value = key.char
-
-                if (
-                    value == "+"
-                    and self.recorder.recording
-                ):
-
-                    self.root.after(
-                        0,
-                        self.take_screenshot
-                    )
-
-            except AttributeError:
-                pass
 
         except Exception:
             pass
@@ -529,6 +494,7 @@ class MacroRecorderApp:
         if self.hotkey_listener:
             self.hotkey_listener.stop()
 
+        self.overlay.destroy()
         self.root.destroy()
 
 

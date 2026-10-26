@@ -11,8 +11,8 @@ APP_NAME = "Macro Recorder V2"
 BASE_DIR = Path(__file__).resolve().parent.parent
 MACROS_DIR = str(BASE_DIR / "data")
 
-WINDOW_WIDTH = 900
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 760
+WINDOW_HEIGHT = 560
 
 BACKGROUND_COLOR = "#202124"
 PANEL_COLOR = "#303134"

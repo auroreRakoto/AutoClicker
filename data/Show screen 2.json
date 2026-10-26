@@ -1,0 +1,34 @@
+{
+    "version": 2,
+    "name": "Show screen 2",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 121,
+                "y": 61,
+                "button": "Button.left"
+            },
+            "time": 0.36432313919067383
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 220,
+                "y": 225,
+                "button": "Button.left"
+            },
+            "time": 1.7769804000854492
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 520,
+                "y": 277,
+                "button": "Button.left"
+            },
+            "time": 3.836772918701172
+        }
+    ],
+    "screenshots": []
+}

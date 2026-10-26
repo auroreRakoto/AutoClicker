@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "name": "BE2S1",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 888,
+                "y": 540,
+                "button": "Button.left"
+            },
+            "time": 0.436379861831665
+        }
+    ],
+    "screenshots": []
+}

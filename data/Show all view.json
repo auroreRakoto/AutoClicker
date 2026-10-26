@@ -1,0 +1,34 @@
+{
+    "version": 2,
+    "name": "Show all view",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 121,
+                "y": 54,
+                "button": "Button.left"
+            },
+            "time": 0.6391866207122803
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 187,
+                "y": 212,
+                "button": "Button.left"
+            },
+            "time": 1.7508325576782227
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 421,
+                "y": 207,
+                "button": "Button.left"
+            },
+            "time": 3.042790651321411
+        }
+    ],
+    "screenshots": []
+}

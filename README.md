@@ -60,3 +60,12 @@ Check the commands and macro names in `script_runner.py` before running it. Macr
 - `data/` — saved macro definitions shared by AutoClicker and Script Runner
 - `scenario/` — Script Runner modules and scenario scripts
 - `screenshots/` — screenshots captured by Script Runner
+
+
+## Recent interface updates
+
+- The AutoClicker recorder no longer has macro screenshots/checkpoints; the Script Runner `SCREENSHOT` command remains available.
+- Both windows can be resized.
+- A small always-on-top overlay shows the current recorded/replayed action or Script Runner step with an elapsed timer.
+- F8 is a global recording toggle and is excluded from recorded macro actions.
+- The Script Runner has an **Enregistrer une macro** button that opens the recorder and saves into the shared `data/` directory.

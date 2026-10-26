@@ -8,10 +8,11 @@ from pynput.mouse import Controller as MouseController, Button
 class MacroPlayer:
     """Play recorded mouse/keyboard actions with interruptible timing."""
 
-    def __init__(self, root, on_status=None, on_checkpoint=None):
+    def __init__(self, root, on_status=None, on_checkpoint=None, on_action=None):
         self.root = root
         self.on_status = on_status
         self.on_checkpoint = on_checkpoint
+        self.on_action = on_action
 
         self.playing = False
         self.last_run_completed = False
@@ -307,6 +308,9 @@ class MacroPlayer:
                             f"@ "
                             f"{action_time:.3f}s"
                         )
+
+                        if self.on_action:
+                            self.root.after(0, lambda item=action: self.on_action(item))
 
                         self.execute_action(
                             action

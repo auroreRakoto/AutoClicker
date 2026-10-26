@@ -8,8 +8,9 @@ class Recorder:
     Gère l'enregistrement des actions clavier et souris.
     """
 
-    def __init__(self, on_status=None):
+    def __init__(self, on_status=None, on_action=None):
         self.on_status = on_status
+        self.on_action = on_action
 
         self.recording = False
         self.paused = False
@@ -75,11 +76,14 @@ class Recorder:
         if self.paused:
             return
 
-        self.actions.append({
+        action = {
             "type": action_type,
             "data": data,
             "time": self.get_elapsed_time()
-        })
+        }
+        self.actions.append(action)
+        if self.on_action:
+            self.on_action(action_type, data)
 
     # ========================================================
     # CLAVIER
@@ -92,8 +96,8 @@ class Recorder:
         if self.paused:
             return
 
-        # ESC est réservé à l'arrêt de lecture.
-        if key == keyboard.Key.esc:
+        # Les raccourcis globaux ne doivent jamais être enregistrés comme actions.
+        if key in (keyboard.Key.esc, keyboard.Key.f8):
             return
 
         try:

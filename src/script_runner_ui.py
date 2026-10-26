@@ -12,21 +12,25 @@ from script_runner_engine import ScriptRunner
 from script_runner_paths import BASE_DIR, SCRIPTS_DIR, IMAGES_DIR, DEFAULT_MODULE
 from script_runner_utils import safe_name
 from script_runner_help import show_commands_help
+from status_overlay import StatusOverlay
+from main import MacroRecorderApp
 
 
 class ScriptRunnerUI:
     def __init__(self, root):
         self.root = root
         self.root.title("AutoClicker V2.3 — Script Runner")
-        self.root.geometry("1100x700")
-        self.root.minsize(900, 580)
+        self.root.geometry("1200x760")
+        self.root.minsize(950, 600)
+        self.root.resizable(True, True)
         self.root.configure(bg="#202124")
 
         self.manager = MacroManager(MACROS_DIR)
-        self.player = MacroPlayer(root=root)
+        self.player = MacroPlayer(root=root, on_action=self.on_playback_action)
         self.status = tk.StringVar(value="Prêt")
         self.module_var = tk.StringVar(value=DEFAULT_MODULE)
         self.current_script_path = None
+        self.overlay = StatusOverlay(self.root, "Script Runner — État")
 
         header = tk.Frame(root, bg="#202124")
         header.pack(fill="x", padx=14, pady=(12, 8))
@@ -72,6 +76,9 @@ class ScriptRunnerUI:
         script_buttons.pack(fill="x", padx=8, pady=(0, 10))
         tk.Button(script_buttons, text="Nouveau", command=self.new_script).pack(side="left", fill="x", expand=True)
         tk.Button(script_buttons, text="Supprimer", command=self.delete_script).pack(side="left", padx=(5, 0))
+        tk.Button(sidebar, text="🔴 Enregistrer une macro", command=self.open_macro_recorder).pack(
+            fill="x", padx=8, pady=(0, 10)
+        )
 
         # Main editor.
         main = tk.Frame(body, bg="#202124")
@@ -95,7 +102,46 @@ class ScriptRunnerUI:
         self.root.protocol("WM_DELETE_WINDOW", self.close)
 
     def set_status(self, text, color="#42a5f5"):
-        self.root.after(0, lambda: self.status.set(text))
+        def update():
+            self.status.set(text)
+            lowered = text.lower()
+            if any(word in lowered for word in ("étape", "lecture", "attente", "capture")):
+                self.overlay.update(text)
+            if "script terminé" in lowered or "script arrêté" in lowered:
+                self.overlay.stop(text)
+        self.root.after(0, update)
+
+    def on_playback_action(self, action):
+        action_type = action.get("type", "action")
+        data = action.get("data", {})
+        if action_type == "key_press":
+            label = f"Touche : {data}"
+        elif action_type == "mouse_click":
+            label = f"Clic : {data.get('button', 'souris')}"
+        elif action_type == "mouse_scroll":
+            label = "Défilement souris"
+        else:
+            label = f"Action : {action_type}"
+        self.overlay.update(label)
+
+    def open_macro_recorder(self):
+        """Open the AutoClicker recorder as a child window, sharing data/ macros."""
+        child = tk.Toplevel(self.root)
+        app = MacroRecorderApp(child)
+        original_close = app.close
+
+        def close_recorder():
+            original_close()
+            self.root.after(250, self.refresh_macro_availability)
+
+        child.protocol("WM_DELETE_WINDOW", close_recorder)
+        self.status.set("Enregistre une macro : elle sera disponible avec JOUER dans ce script.")
+
+    def refresh_macro_availability(self):
+        names = self.manager.get_macros()
+        self.status.set(
+            f"Macros disponibles : {len(names)} — " + (", ".join(names[:5]) if names else "aucune")
+        )
 
     def module_path(self, module):
         return os.path.join(str(SCRIPTS_DIR), safe_name(module))
@@ -277,12 +323,15 @@ class ScriptRunnerUI:
             messagebox.showwarning("En cours", "Une lecture est déjà en cours.", parent=self.root)
             return
 
+        self.overlay.start("Script en cours…")
+
         def run():
             try:
                 self.runner.run_text(text)
             except Exception as exc:
                 self.root.after(0, lambda error=exc: messagebox.showerror("Erreur du script", str(error), parent=self.root))
                 self.root.after(0, lambda error=exc: self.status.set(f"Erreur : {error}"))
+                self.root.after(0, lambda error=exc: self.overlay.stop(f"Erreur : {error}"))
         threading.Thread(target=run, daemon=True).start()
 
     def stop_script(self):
@@ -290,5 +339,7 @@ class ScriptRunnerUI:
 
     def close(self):
         self.runner.stop()
+        self.player.stop()
+        self.overlay.destroy()
         self.root.destroy()
 

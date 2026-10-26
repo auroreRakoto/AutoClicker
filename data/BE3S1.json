@@ -1,0 +1,21 @@
+{
+    "version": 2,
+    "name": "BE3S1",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 887,
+                "y": 684,
+                "button": "Button.left"
+            },
+            "time": 0.43089771270751953
+        },
+        {
+            "type": "key_press",
+            "data": "Key.f8",
+            "time": 1.1220531463623047
+        }
+    ],
+    "screenshots": []
+}

@@ -1,0 +1,21 @@
+{
+    "version": 2,
+    "name": "BDownRex",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 1510,
+                "y": 1013,
+                "button": "Button.left"
+            },
+            "time": 0.43131113052368164
+        },
+        {
+            "type": "key_press",
+            "data": "Key.f8",
+            "time": 0.8930726051330566
+        }
+    ],
+    "screenshots": []
+}
