@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 
 # ============================================================
@@ -7,7 +8,8 @@ import os
 
 APP_NAME = "Macro Recorder V2"
 
-MACROS_DIR = "macros"
+BASE_DIR = Path(__file__).resolve().parent.parent
+MACROS_DIR = str(BASE_DIR / "data")
 
 WINDOW_WIDTH = 900
 WINDOW_HEIGHT = 720

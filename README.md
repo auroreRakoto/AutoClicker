@@ -57,6 +57,6 @@ Check the commands and macro names in `script_runner.py` before running it. Macr
 - `player.py` — macro playback
 - `screenshots.py` — screenshot handling
 - `ui.py` — desktop interface
-- `macros/` — saved macro definitions
-- `scripts/` — scenario scripts
-- `script_images/` — images used by scenarios
+- `data/` — saved macro definitions shared by AutoClicker and Script Runner
+- `scenario/` — Script Runner modules and scenario scripts
+- `screenshots/` — screenshots captured by Script Runner
