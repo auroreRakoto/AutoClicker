@@ -1,0 +1,44 @@
+{
+    "version": 2,
+    "name": "Open rex",
+    "actions": [
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 937,
+                "y": 169,
+                "button": "Button.left"
+            },
+            "time": 0.3800089359283447
+        },
+        {
+            "type": "key_press",
+            "data": "Key.ctrl_l",
+            "time": 0.7394070625305176
+        },
+        {
+            "type": "key_press",
+            "data": "\u0014",
+            "time": 0.904921293258667
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 970,
+                "y": 108,
+                "button": "Button.left"
+            },
+            "time": 2.338120222091675
+        },
+        {
+            "type": "mouse_click",
+            "data": {
+                "x": 981,
+                "y": 126,
+                "button": "Button.left"
+            },
+            "time": 3.4795660972595215
+        }
+    ],
+    "screenshots": []
+}
